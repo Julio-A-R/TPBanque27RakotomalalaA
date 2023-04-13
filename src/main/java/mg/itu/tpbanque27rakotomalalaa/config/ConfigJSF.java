@@ -1,4 +1,4 @@
-package mg.itu.tp1customer_27_rakotomalalaa.config;
+package mg.itu.tpbanque27rakotomalalaa.config;
 
 
 import jakarta.enterprise.context.ApplicationScoped;

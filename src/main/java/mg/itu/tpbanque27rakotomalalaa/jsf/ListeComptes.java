@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSF/JSFManagedBean.java to edit this template
  */
-package mg.itu.tp1customer_27_rakotomalalaa.jsf;
+package mg.itu.tpbanque27rakotomalalaa.jsf;
 
 import jakarta.ejb.EJB;
 import jakarta.faces.view.ViewScoped;

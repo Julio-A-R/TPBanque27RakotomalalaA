@@ -73,7 +73,7 @@ public class Mouvement implements Serializable {
         }
         else if(typeMouvement.equals("retrait")){
             if(montant > compte.getSolde()){
-                Util.addFlashErrorMessage("Votre solde est insuffisant !");
+                Util.messageErreur("Votre solde est insuffisant !", "Solde insuffisant", "form:montant");
                 return null;
             }
             gestionnaire.retirer(compte, montant);

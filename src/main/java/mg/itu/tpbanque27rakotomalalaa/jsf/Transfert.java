@@ -9,6 +9,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import mg.itu.tpbanque27rakotomalalaa.ejb.GestionnaireCompte;
 import mg.itu.tpbanque27rakotomalalaa.entities.CompteBancaire;
+import mg.itu.tpbanque27rakotomalalaa.jsf.util.Util;
 
 /**
  *
@@ -54,11 +55,40 @@ public class Transfert {
         this.montant = montant;
     }
 
-    public String transferer(){
+    public String transferer() {
+        boolean erreur = false;
         CompteBancaire source = this.gestionnaire.getCompteById(idSource);
+        if (montant <= 0) {
+            Util.messageErreur("le montant doit etre > 0 ", "Montant incorrect", "form:montant");
+        }
+        if (source == null) { //aucun source
+            Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:source");
+            erreur = true;
+        } else {
+            if (source.getSolde() < montant) { //solde du compte source est insuffisant...
+                Util.messageErreur("Votre solde est insuffisant !", "Solde insuffisant", "form:montant");
+                erreur = true;
+            }
+        }
+
         CompteBancaire destinataire = this.gestionnaire.getCompteById(idDestinataire);
-        this.gestionnaire.transferer(source, destinataire, montant);
-        return "listeComptes?faces-redirect=true";
+        if (destinataire == null) { //aucun source
+            Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:destinataire");
+            erreur = true;
+        }
+
+        if (erreur) {
+            return null;
+        } else {
+            
+            this.gestionnaire.transferer(source, destinataire, montant);
+            Util.addFlashInfoMessage("Tranfert correctement effectué : " 
+                    + source.getNom()
+                    + " a transféré "
+                    + montant
+                    + " à " + destinataire.getNom());
+            return "listeComptes?faces-redirect=true";
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import mg.itu.tpbanque27rakotomalalaa.ejb.GestionnaireCompte;
 import mg.itu.tpbanque27rakotomalalaa.entities.CompteBancaire;
+import mg.itu.tpbanque27rakotomalalaa.jsf.util.Util;
 
 /**
  *
@@ -35,5 +36,11 @@ public class ListeComptes implements Serializable{
             allComptes = gestionnaireCompte.getAllComptes();
         }
         return allComptes;
+    }
+    
+    public String supprimer(CompteBancaire c){
+        gestionnaireCompte.deleteCompte(c);
+        Util.addFlashInfoMessage("Compte de " + c.getNom() + " supprimé");
+        return "listeComptes?faces-redirect=true";
     }
 }

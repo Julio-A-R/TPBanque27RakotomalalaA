@@ -62,4 +62,12 @@ public class GestionnaireCompte {
     public CompteBancaire getCompteById(int id){
         return em.find(CompteBancaire.class, Long.valueOf(id));
     }
+    
+    public boolean checkExistingName(CompteBancaire c){
+        String q = "Select count(cb) from CompteBancaire cb "
+                + "where cb.nom = :nom";
+        Query query = em.createQuery(q);
+        query.setParameter("nom", c.getNom());
+        return ((Long)query.getSingleResult()) > 0 ;
+    }
 }

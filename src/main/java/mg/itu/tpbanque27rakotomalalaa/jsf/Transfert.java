@@ -18,8 +18,8 @@ import mg.itu.tpbanque27rakotomalalaa.jsf.util.Util;
 @Named(value = "transfert")
 @RequestScoped
 public class Transfert {
-    private int idSource;
-    private int idDestinataire;
+    private Long idSource;
+    private Long idDestinataire;
     private int montant;
 
     @EJB
@@ -31,11 +31,11 @@ public class Transfert {
     public Transfert() {
     }
 
-    public int getIdSource() {
+    public Long getIdSource() {
         return idSource;
     }
 
-    public int getIdDestinataire() {
+    public Long getIdDestinataire() {
         return idDestinataire;
     }
 
@@ -43,11 +43,11 @@ public class Transfert {
         return montant;
     }
 
-    public void setIdSource(int idSource) {
+    public void setIdSource(Long idSource) {
         this.idSource = idSource;
     }
 
-    public void setIdDestinataire(int idDestinataire) {
+    public void setIdDestinataire(Long idDestinataire) {
         this.idDestinataire = idDestinataire;
     }
 

@@ -5,8 +5,10 @@
 package mg.itu.tpbanque27rakotomalalaa.jsf;
 
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
+import jakarta.persistence.OptimisticLockException;
 import mg.itu.tpbanque27rakotomalalaa.ejb.GestionnaireCompte;
 import mg.itu.tpbanque27rakotomalalaa.entities.CompteBancaire;
 import mg.itu.tpbanque27rakotomalalaa.jsf.util.Util;
@@ -56,38 +58,54 @@ public class Transfert {
     }
 
     public String transferer() {
-        boolean erreur = false;
-        CompteBancaire source = this.gestionnaire.getCompteById(idSource);
-        if (montant <= 0) {
-            Util.messageErreur("le montant doit etre > 0 ", "Montant incorrect", "form:montant");
-        }
-        if (source == null) { //aucun source
-            Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:source");
-            erreur = true;
-        } else {
-            if (source.getSolde() < montant) { //solde du compte source est insuffisant...
-                Util.messageErreur("Votre solde est insuffisant !", "Solde insuffisant", "form:montant");
+        try {
+            boolean erreur = false;
+            CompteBancaire source = this.gestionnaire.getCompteById(idSource);
+            if (montant <= 0) {
+                Util.messageErreur("le montant doit etre > 0 ", "Montant incorrect", "form:montant");
+            }
+            if (source == null) { //aucun source
+                Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:source");
+                erreur = true;
+            } else {
+                if (source.getSolde() < montant) { //solde du compte source est insuffisant...
+                    Util.messageErreur("Votre solde est insuffisant !", "Solde insuffisant", "form:montant");
+                    erreur = true;
+                }
+            }
+
+            CompteBancaire destinataire = this.gestionnaire.getCompteById(idDestinataire);
+            if (destinataire == null) { //aucun source
+                Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:destinataire");
                 erreur = true;
             }
-        }
 
-        CompteBancaire destinataire = this.gestionnaire.getCompteById(idDestinataire);
-        if (destinataire == null) { //aucun source
-            Util.messageErreur("Aucun compte avec cet id !", "Aucun compte avec cet id !", "form:destinataire");
-            erreur = true;
-        }
+            if (erreur) {
+                return null;
+            } else {
 
-        if (erreur) {
+                this.gestionnaire.transferer(source, destinataire, montant);
+                Util.addFlashInfoMessage("Tranfert correctement effectué : "
+                        + source.getNom()
+                        + " a transféré "
+                        + montant
+                        + " à " + destinataire.getNom());
+                return "listeComptes?faces-redirect=true";
+            }
+        } catch (EJBException ex) {
+            Throwable cause = ex.getCause();
+            if (cause != null) {
+                if (cause instanceof OptimisticLockException) {
+                    Util.messageErreur("Le compte " + idSource
+                            + " ou " + idDestinataire
+                            + " a été modifié ou supprimé par un autre utilisateur !");
+                } else { // Afficher le message de ex si la cause n'est pas une OptimisticLockException
+                    Util.messageErreur(cause.getMessage());
+                }
+            } else { // Pas de cause attachée à l'EJBException
+                Util.messageErreur(ex.getMessage());
+            }
             return null;
-        } else {
-            
-            this.gestionnaire.transferer(source, destinataire, montant);
-            Util.addFlashInfoMessage("Tranfert correctement effectué : " 
-                    + source.getNom()
-                    + " a transféré "
-                    + montant
-                    + " à " + destinataire.getNom());
-            return "listeComptes?faces-redirect=true";
         }
     }
 
